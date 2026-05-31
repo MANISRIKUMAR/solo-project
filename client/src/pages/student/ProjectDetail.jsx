@@ -8,23 +8,34 @@ export default function ProjectDetail() {
   const { id } = useParams();
   const [project, setProject] = useState(null);
   const [myBid, setMyBid] = useState(null);
+  const [form, setForm] = useState({ amount: "", deliveryDays: "", proposal: "" });
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   const load = async () => {
     try {
-      const [projectRes, bidsRes] = await Promise.all([
-        axios.get(`${API_URL}/api/projects/${id}`),
-        axios.get(`${API_URL}/api/bids/my`),
-      ]);
+      // 1. Fetch project details publicly
+      const projectRes = await axios.get(`${API_URL}/api/projects/${id}`);
       setProject(projectRes.data);
-      const existing = bidsRes.data.find((bid) => bid.project?._id === id);
+    } catch (err) {
+      console.error(err);
+      setMessage(err.response?.data?.message || "Could not load project details.");
+      return;
+    }
+
+    try {
+      // 2. Fetch user's bids separately
+      const bidsRes = await axios.get(`${API_URL}/api/bids/my`);
+      const existing = bidsRes.data.find((bid) => {
+        const bidProjId = typeof bid.project === "object" ? bid.project?._id : bid.project;
+        return bidProjId === id;
+      });
       if (existing) {
         setMyBid(existing);
         setForm({ amount: existing.amount, deliveryDays: existing.deliveryDays, proposal: existing.proposal });
       }
     } catch (err) {
-      console.error(err);
+      console.warn("Could not fetch student bids:", err.message);
     }
   };
 
