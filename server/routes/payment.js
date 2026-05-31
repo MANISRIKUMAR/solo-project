@@ -4,6 +4,8 @@ const crypto = require("crypto");
 const Bid = require("../models/Bid");
 const Project = require("../models/Project");
 const { verifyToken, isClient } = require("../middleware/authMiddleware");
+const User = require("../models/User");
+const Notification = require("../models/Notification");
 
 const router = express.Router();
 
@@ -94,6 +96,10 @@ router.post("/verify-payment", verifyToken, isClient, async (req, res) => {
       return res.status(403).json({ message: "Not authorized to accept this bid" });
     }
 
+    // Calculate 24% advance to update earnings & spent
+    const rawAdvance = bid.amount * 0.24;
+    const advanceAmount = Math.round(rawAdvance * 100) / 100;
+
     // Accept selected bid, reject all other pending bids for this project
     bid.status = "accepted";
     project.selectedBid = bid._id;
@@ -105,6 +111,29 @@ router.post("/verify-payment", verifyToken, isClient, async (req, res) => {
       { status: "rejected" }
     );
     await project.save();
+
+    // 1. Update Student's total earnings
+    const student = await User.findById(bid.bidder);
+    if (student) {
+      student.totalEarnings += advanceAmount;
+      await student.save();
+    }
+
+    // 2. Update Client's total spent
+    const client = await User.findById(req.user._id);
+    if (client) {
+      client.totalSpent += advanceAmount;
+      await client.save();
+    }
+
+    // 3. Send Notification to Student
+    await Notification.create({
+      recipient: bid.bidder,
+      sender: req.user._id,
+      type: "bid_accepted",
+      message: `${req.user.name} accepted your bid and paid a 24% advance of $${advanceAmount} for your project "${project.title}".`,
+      project: project._id,
+    });
 
     res.json({
       message: "Payment verified and project started successfully!",

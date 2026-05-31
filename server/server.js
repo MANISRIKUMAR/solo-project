@@ -8,6 +8,7 @@ const bidRoutes = require("./routes/bids");
 const milestoneRoutes = require("./routes/milestones");
 const userRoutes = require("./routes/users");
 const paymentRoutes = require("./routes/payment");
+const notificationRoutes = require("./routes/notifications");
 
 dotenv.config();
 connectDB();
@@ -285,6 +286,7 @@ app.use("/api/bids", bidRoutes);
 app.use("/api/milestones", milestoneRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/payments", paymentRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 app.get("/", (req, res) => {
   res.json({

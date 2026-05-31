@@ -1,5 +1,6 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import NotificationDropdown from "./NotificationDropdown";
 
 const activeClass = "text-white bg-slate-900";
 const inactiveClass = "text-slate-700 hover:text-slate-900";
@@ -18,7 +19,10 @@ export default function StudentNavbar() {
           <NavLink to="/student/my-bids" className={({ isActive }) => isActive ? activeClass + " px-3 py-2 rounded" : inactiveClass + " px-3 py-2 rounded"}>My Bids</NavLink>
           <NavLink to="/student/profile" className={({ isActive }) => isActive ? activeClass + " px-3 py-2 rounded" : inactiveClass + " px-3 py-2 rounded"}>Portfolio</NavLink>
         </div>
-        <button onClick={() => { logout(); navigate("/login"); }} className="rounded bg-slate-900 px-4 py-2 text-white hover:bg-slate-700">Logout</button>
+        <div className="flex items-center gap-4">
+          <NotificationDropdown />
+          <button onClick={() => { logout(); navigate("/login"); }} className="rounded bg-slate-900 px-4 py-2 text-white hover:bg-slate-700">Logout</button>
+        </div>
       </div>
     </nav>
   );

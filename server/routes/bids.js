@@ -1,6 +1,7 @@
 const express = require("express");
 const Bid = require("../models/Bid");
 const Project = require("../models/Project");
+const Notification = require("../models/Notification");
 const { verifyToken, isStudent, isClient } = require("../middleware/authMiddleware");
 
 const router = express.Router();
@@ -29,6 +30,15 @@ router.post("/", verifyToken, isStudent, async (req, res) => {
     });
     project.totalBids += 1;
     await project.save();
+
+    await Notification.create({
+      recipient: project.postedBy,
+      sender: req.user._id,
+      type: "bid_placed",
+      message: `${req.user.name} placed a bid of $${amount} on your project "${project.title}".`,
+      project: project._id,
+    });
+
     res.status(201).json(bid);
   } catch (error) {
     res.status(500).json({ message: error.message });
