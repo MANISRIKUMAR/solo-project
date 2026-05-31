@@ -34,6 +34,15 @@ export default function NotificationDropdown() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const handleMarkRead = async (id) => {
+    try {
+      await axios.put(`${API_URL}/api/notifications/${id}/read`);
+      setNotifications((prev) => prev.map((n) => n._id === id ? { ...n, read: true } : n));
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const handleMarkAllRead = async () => {
     try {
       await axios.put(`${API_URL}/api/notifications/read-all`);
@@ -43,7 +52,8 @@ export default function NotificationDropdown() {
     }
   };
 
-  const unreadCount = notifications.filter((n) => !n.read).length;
+  const unreadNotifications = notifications.filter((n) => !n.read);
+  const unreadCount = unreadNotifications.length;
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -84,37 +94,44 @@ export default function NotificationDropdown() {
                 onClick={handleMarkAllRead}
                 className="text-xs font-medium text-indigo-600 hover:text-indigo-500 transition"
               >
-                Mark all as read
+                Clear all
               </button>
             )}
           </div>
 
           {/* List */}
           <div className="max-h-60 overflow-y-auto space-y-3 pr-1">
-            {notifications.length > 0 ? (
-              notifications.map((notification) => (
+            {unreadNotifications.length > 0 ? (
+              unreadNotifications.map((notification) => (
                 <div
                   key={notification._id}
-                  className={`p-3 rounded-2xl border transition duration-150 ${
-                    notification.read
-                      ? "border-slate-50 bg-slate-50/50"
-                      : "border-indigo-50 bg-indigo-50/20"
-                  }`}
+                  className="p-3 rounded-2xl border border-indigo-50 bg-indigo-50/20 transition duration-150 relative flex items-start justify-between gap-2 group"
                 >
-                  <p className="text-xs text-slate-800 leading-relaxed font-medium">
-                    {notification.message}
-                  </p>
-                  <span className="mt-1.5 block text-[10px] text-slate-400 font-medium">
-                    {new Date(notification.createdAt).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </span>
+                  <div className="flex-1">
+                    <p className="text-xs text-slate-800 leading-relaxed font-medium">
+                      {notification.message}
+                    </p>
+                    <span className="mt-1.5 block text-[10px] text-slate-400 font-medium">
+                      {new Date(notification.createdAt).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => handleMarkRead(notification._id)}
+                    title="Mark as read & dismiss"
+                    className="rounded-full p-1 text-slate-400 hover:bg-indigo-600 hover:text-white transition duration-150 self-start"
+                  >
+                    <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" strokeWidth="2.5" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                    </svg>
+                  </button>
                 </div>
               ))
             ) : (
-              <div className="py-6 text-center text-xs text-slate-600 font-medium">
-                No notifications yet.
+              <div className="py-6 text-center text-xs text-slate-500 font-medium">
+                No new notifications! 🎉
               </div>
             )}
           </div>
