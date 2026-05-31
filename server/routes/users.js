@@ -2,13 +2,55 @@ const express = require("express");
 const multer = require("multer");
 const User = require("../models/User");
 const { verifyToken } = require("../middleware/authMiddleware");
+const fs = require("fs");
+const path = require("path");
 
 const router = express.Router();
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, "uploads/"),
-  filename: (req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`),
-});
+// 1. Ensure local uploads directory exists to prevent any multer ENOENT crashes
+const uploadsDir = path.join(process.cwd(), "uploads");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+// 2. Setup dynamic storage uploader supporting both local fallback and Cloudinary cloud storage
+let storage;
+
+if (process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET) {
+  try {
+    const cloudinary = require("cloudinary").v2;
+    const { CloudinaryStorage } = require("multer-storage-cloudinary");
+
+    cloudinary.config({
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME.trim(),
+      api_key: process.env.CLOUDINARY_API_KEY.trim(),
+      api_secret: process.env.CLOUDINARY_API_SECRET.trim(),
+    });
+
+    storage = new CloudinaryStorage({
+      cloudinary: cloudinary,
+      params: {
+        folder: "freelance_portal_profiles",
+        allowed_formats: ["jpg", "jpeg", "png", "gif"],
+        transformation: [{ width: 300, height: 300, crop: "fill" }],
+      },
+    });
+    console.log("Cloudinary Storage configured successfully!");
+  } catch (cloudinaryErr) {
+    console.error("Failed to initialize Cloudinary storage, falling back to disk:", cloudinaryErr);
+    storage = multer.diskStorage({
+      destination: (req, file, cb) => cb(null, "uploads/"),
+      filename: (req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`),
+    });
+  }
+} else {
+  storage = multer.diskStorage({
+    destination: (req, file, cb) => cb(null, "uploads/"),
+    filename: (req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`),
+  });
+  console.log("Local disk storage configured (uploads directory verified).");
+}
+
 const upload = multer({ storage });
 
 router.get("/:id/profile", async (req, res) => {
@@ -38,7 +80,9 @@ router.put("/profile", verifyToken, upload.single("profilePhoto"), async (req, r
     const { bio, skills, portfolio, companyName, name } = req.body;
     user.name = name || user.name;
     if (req.file) {
-      user.profilePhoto = `/uploads/${req.file.filename}`;
+      user.profilePhoto = req.file.path && req.file.path.startsWith("http")
+        ? req.file.path
+        : `/uploads/${req.file.filename}`;
     }
     if (user.role === "student") {
       user.bio = bio || user.bio;

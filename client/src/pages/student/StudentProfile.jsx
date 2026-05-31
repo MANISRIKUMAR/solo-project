@@ -33,7 +33,10 @@ export default function StudentProfile() {
           companyName: response.data.companyName || "",
         });
         if (response.data.profilePhoto) {
-          setPhotoPreview(`${API_URL}${response.data.profilePhoto}`);
+          const photoUrl = response.data.profilePhoto.startsWith("http")
+            ? response.data.profilePhoto
+            : `${API_URL}${response.data.profilePhoto}`;
+          setPhotoPreview(photoUrl);
         }
       } catch (err) {
         console.error("Could not fetch profile info:", err);
