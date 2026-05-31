@@ -1,7 +1,7 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
-const connectDB = require("./config/db");
+const { connectDB, dbStatus } = require("./config/db");
 const authRoutes = require("./routes/auth");
 const projectRoutes = require("./routes/projects");
 const bidRoutes = require("./routes/bids");
@@ -19,6 +19,17 @@ app.use(cors({
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 
+// Middleware to ensure DB is connected before routing any API requests
+app.use("/api", (req, res, next) => {
+  if (!dbStatus.connected) {
+    return res.status(503).json({
+      message: "Database is not connected. Please verify connection credentials and network access.",
+      error: dbStatus.error,
+    });
+  }
+  next();
+});
+
 app.use("/api/auth", authRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/bids", bidRoutes);
@@ -26,7 +37,11 @@ app.use("/api/milestones", milestoneRoutes);
 app.use("/api/users", userRoutes);
 
 app.get("/", (req, res) => {
-  res.json({ message: "Freelance Bid Portal API is running" });
+  res.json({
+    message: "Freelance Bid Portal API is running",
+    database: dbStatus.connected ? "connected" : "disconnected",
+    error: dbStatus.error || null,
+  });
 });
 
 app.use((req, res) => {
