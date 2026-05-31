@@ -17,6 +17,7 @@ export default function ClientNavbar() {
           <NavLink to="/client/dashboard" className={({ isActive }) => isActive ? activeClass + " px-3 py-2 rounded" : inactiveClass + " px-3 py-2 rounded"}>Dashboard</NavLink>
           <NavLink to="/client/post-project" className={({ isActive }) => isActive ? activeClass + " px-3 py-2 rounded" : inactiveClass + " px-3 py-2 rounded"}>Post Project</NavLink>
           <NavLink to="/client/projects" className={({ isActive }) => isActive ? activeClass + " px-3 py-2 rounded" : inactiveClass + " px-3 py-2 rounded"}>My Projects</NavLink>
+          <NavLink to="/chat" className={({ isActive }) => isActive ? activeClass + " px-3 py-2 rounded" : inactiveClass + " px-3 py-2 rounded"}>Chats</NavLink>
         </div>
         <div className="flex items-center gap-4">
           <NotificationDropdown />

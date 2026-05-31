@@ -18,6 +18,7 @@ export default function StudentNavbar() {
           <NavLink to="/student/browse" className={({ isActive }) => isActive ? activeClass + " px-3 py-2 rounded" : inactiveClass + " px-3 py-2 rounded"}>Browse</NavLink>
           <NavLink to="/student/my-bids" className={({ isActive }) => isActive ? activeClass + " px-3 py-2 rounded" : inactiveClass + " px-3 py-2 rounded"}>My Bids</NavLink>
           <NavLink to="/student/profile" className={({ isActive }) => isActive ? activeClass + " px-3 py-2 rounded" : inactiveClass + " px-3 py-2 rounded"}>Portfolio</NavLink>
+          <NavLink to="/chat" className={({ isActive }) => isActive ? activeClass + " px-3 py-2 rounded" : inactiveClass + " px-3 py-2 rounded"}>Chats</NavLink>
         </div>
         <div className="flex items-center gap-4">
           <NotificationDropdown />

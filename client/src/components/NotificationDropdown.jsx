@@ -52,16 +52,23 @@ export default function NotificationDropdown() {
       // 1. Mark as read on backend and locally
       await handleMarkRead(notification._id);
 
+      const projId = notification.project?._id || notification.project;
+      const senderId = notification.sender?._id || notification.sender;
+
       // 2. Redirect based on notification type and recipient role
       if (notification.type === "chat_message") {
-        navigate(`/chat/${notification.project}/${notification.sender?._id || notification.sender}`);
+        if (projId && senderId) {
+          navigate(`/chat/${projId}/${senderId}`);
+        }
       } else if (notification.type === "bid_placed") {
-        navigate(`/client/projects/${notification.project}`);
-      } else if (notification.project) {
+        if (projId) {
+          navigate(`/client/projects/${projId}`);
+        }
+      } else if (projId) {
         if (user?.role === "client") {
-          navigate(`/client/projects/${notification.project}`);
+          navigate(`/client/projects/${projId}`);
         } else {
-          navigate(`/student/projects/${notification.project}`);
+          navigate(`/student/projects/${projId}`);
         }
       }
       setIsOpen(false);

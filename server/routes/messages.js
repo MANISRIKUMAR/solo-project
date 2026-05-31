@@ -6,6 +6,52 @@ const { verifyToken } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
+// Get list of all active conversations/rooms for the current user
+router.get("/conversations", verifyToken, async (req, res) => {
+  try {
+    // Find all messages involving the current user
+    const messages = await Message.find({
+      $or: [
+        { sender: req.user._id },
+        { recipient: req.user._id }
+      ]
+    })
+    .populate("project", "title category")
+    .populate("sender", "name profilePhoto role")
+    .populate("recipient", "name profilePhoto role")
+    .sort({ createdAt: -1 });
+
+    // Group messages by unique (project + otherParticipant) key
+    const conversationsMap = {};
+    for (const msg of messages) {
+      if (!msg.project) continue;
+      const partner = msg.sender._id.toString() === req.user._id.toString() ? msg.recipient : msg.sender;
+      if (!partner) continue;
+      
+      const key = `${msg.project._id}_${partner._id}`;
+      if (!conversationsMap[key]) {
+        conversationsMap[key] = {
+          project: msg.project,
+          partner: {
+            id: partner._id,
+            name: partner.name,
+            profilePhoto: partner.profilePhoto,
+            role: partner.role,
+          },
+          lastMessage: {
+            text: msg.text,
+            createdAt: msg.createdAt,
+          },
+        };
+      }
+    }
+
+    res.json(Object.values(conversationsMap));
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // Get message history for a specific project and chat partner
 router.get("/project/:projectId", verifyToken, async (req, res) => {
   const { partnerId } = req.query;

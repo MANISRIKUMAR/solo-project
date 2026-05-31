@@ -83,6 +83,10 @@ function App() {
         path="/chat/:projectId/:partnerId"
         element={<ProtectedRoute><Chat /></ProtectedRoute>}
       />
+      <Route
+        path="/chat"
+        element={<ProtectedRoute><Chat /></ProtectedRoute>}
+      />
       <Route path="/" element={<Home />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
