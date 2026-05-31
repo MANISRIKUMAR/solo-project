@@ -32,7 +32,7 @@ export default function ClientMilestones() {
       });
       setMessage("Milestone created.");
       setForm({ title: "", description: "", amount: "", dueDate: "", order: form.order + 1 });
-      const response = await axios.get(`http://localhost:5000/api/milestones/${projectId}`);
+      const response = await axios.get(`${API_URL}/api/milestones/${projectId}`);
       setMilestones(response.data);
     } catch (err) {
       setMessage(err.response?.data?.message || "Could not create milestone.");
