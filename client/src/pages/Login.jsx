@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import API_URL from "../api";
 import { useAuth } from "../context/AuthContext";
 
 export default function Login() {
@@ -12,7 +13,7 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:5000/api/auth/login", form);
+      const response = await axios.post(`${API_URL}/api/auth/login`, form);
       login(response.data);
       navigate(response.data.user.role === "client" ? "/client/dashboard" : "/student/dashboard");
     } catch (err) {

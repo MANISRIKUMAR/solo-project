@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import StudentNavbar from "../../components/StudentNavbar";
 import { useAuth } from "../../context/AuthContext";
+import API_URL from "../../api";
 
 export default function StudentDashboard() {
   const { user } = useAuth();
@@ -12,8 +13,8 @@ export default function StudentDashboard() {
     const load = async () => {
       try {
         const [bidsRes, profileRes] = await Promise.all([
-          axios.get("http://localhost:5000/api/bids/my"),
-          axios.get(`http://localhost:5000/api/users/${user.id}/profile`),
+          axios.get(`${API_URL}/api/bids/my`),
+          axios.get(`${API_URL}/api/users/${user.id}/profile`),
         ]);
         setBids(bidsRes.data);
         setProfile(profileRes.data);

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import StudentNavbar from "../../components/StudentNavbar";
+import API_URL from "../../api";
 
 export default function StudentProfile() {
   const [profile, setProfile] = useState(null);
@@ -10,7 +11,7 @@ export default function StudentProfile() {
   useEffect(() => {
     const load = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/users/me/profile");
+        const response = await axios.get(`${API_URL}/api/users/me/profile`);
         setProfile(response.data);
         setForm({
           name: response.data.name || "",
@@ -28,7 +29,7 @@ export default function StudentProfile() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put("http://localhost:5000/api/users/profile", {
+      await axios.put(`${API_URL}/api/users/profile`, {
         name: form.name,
         bio: form.bio,
         skills: form.skills,

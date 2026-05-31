@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import StudentNavbar from "../../components/StudentNavbar";
+import API_URL from "../../api";
 
 export default function Browse() {
   const [projects, setProjects] = useState([]);
@@ -9,7 +10,7 @@ export default function Browse() {
 
   const loadProjects = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/projects", { params: filters });
+      const response = await axios.get(`${API_URL}/api/projects`, { params: filters });
       setProjects(response.data);
     } catch (err) {
       console.error(err);

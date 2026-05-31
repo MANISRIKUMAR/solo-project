@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import ClientNavbar from "../../components/ClientNavbar";
+import API_URL from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
@@ -14,8 +15,8 @@ export default function ClientDashboard() {
     const load = async () => {
       try {
         const [projectsRes, profileRes] = await Promise.all([
-          axios.get("http://localhost:5000/api/projects/my"),
-          axios.get(`http://localhost:5000/api/users/${user.id}/profile`),
+          axios.get(`${API_URL}/api/projects/my`),
+          axios.get(`${API_URL}/api/users/${user.id}/profile`),
         ]);
         setProjects(projectsRes.data);
         setProfile(profileRes.data);

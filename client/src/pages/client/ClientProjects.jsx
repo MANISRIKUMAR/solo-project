@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import ClientNavbar from "../../components/ClientNavbar";
+import API_URL from "../../api";
 
 export default function ClientProjects() {
   const [projects, setProjects] = useState([]);
@@ -10,7 +11,7 @@ export default function ClientProjects() {
   useEffect(() => {
     const load = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/projects/my");
+        const response = await axios.get(`${API_URL}/api/projects/my`);
         setProjects(response.data);
       } catch (err) {
         console.error(err);
@@ -21,7 +22,7 @@ export default function ClientProjects() {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/projects/${id}`);
+      await axios.delete(`${API_URL}/api/projects/${id}`);
       setProjects((prev) => prev.filter((project) => project._id !== id));
       setMessage("Project deleted successfully.");
     } catch (err) {

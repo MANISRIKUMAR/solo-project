@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import StudentNavbar from "../../components/StudentNavbar";
+import API_URL from "../../api";
 
 export default function ProjectDetail() {
   const { id } = useParams();
@@ -13,8 +14,8 @@ export default function ProjectDetail() {
   const load = async () => {
     try {
       const [projectRes, bidsRes] = await Promise.all([
-        axios.get(`http://localhost:5000/api/projects/${id}`),
-        axios.get("http://localhost:5000/api/bids/my"),
+        axios.get(`${API_URL}/api/projects/${id}`),
+        axios.get(`${API_URL}/api/bids/my`),
       ]);
       setProject(projectRes.data);
       const existing = bidsRes.data.find((bid) => bid.project?._id === id);
@@ -45,10 +46,10 @@ export default function ProjectDetail() {
     }
     try {
       if (myBid) {
-        await axios.put(`http://localhost:5000/api/bids/${myBid._id}`, form);
+        await axios.put(`${API_URL}/api/bids/${myBid._id}`, form);
         setMessage("Bid updated successfully.");
       } else {
-        await axios.post("http://localhost:5000/api/bids", {
+        await axios.post(`${API_URL}/api/bids`, {
           projectId: id,
           ...form,
         });
@@ -62,7 +63,7 @@ export default function ProjectDetail() {
 
   const handleWithdraw = async () => {
     try {
-      await axios.delete(`http://localhost:5000/api/bids/${myBid._id}`);
+      await axios.delete(`${API_URL}/api/bids/${myBid._id}`);
       setMessage("Bid withdrawn.");
       setMyBid(null);
       setForm({ amount: "", deliveryDays: "", proposal: "" });

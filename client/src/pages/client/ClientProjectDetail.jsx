@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams, Link } from "react-router-dom";
 import ClientNavbar from "../../components/ClientNavbar";
+import API_URL from "../../api";
 
 export default function ClientProjectDetail() {
   const { id } = useParams();
@@ -13,8 +14,8 @@ export default function ClientProjectDetail() {
     const load = async () => {
       try {
         const [projectRes, bidsRes] = await Promise.all([
-          axios.get(`http://localhost:5000/api/projects/${id}`),
-          axios.get(`http://localhost:5000/api/bids/project/${id}`),
+          axios.get(`${API_URL}/api/projects/${id}`),
+          axios.get(`${API_URL}/api/bids/project/${id}`),
         ]);
         setProject(projectRes.data);
         setBids(bidsRes.data);
@@ -27,7 +28,7 @@ export default function ClientProjectDetail() {
 
   const handleAction = async (bidId, action) => {
     try {
-      const response = await axios.put(`http://localhost:5000/api/bids/${bidId}/${action}`);
+      const response = await axios.put(`${API_URL}/api/bids/${bidId}/${action}`);
       setMessage(`Bid ${action}ed successfully.`);
       if (action === "accept") {
         setProject((prev) => ({ ...prev, status: "in-progress", selectedBid: response.data.bid._id }));

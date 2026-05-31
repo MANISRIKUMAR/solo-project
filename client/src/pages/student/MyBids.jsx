@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import StudentNavbar from "../../components/StudentNavbar";
+import API_URL from "../../api";
 
 export default function MyBids() {
   const [bids, setBids] = useState([]);
@@ -9,7 +10,7 @@ export default function MyBids() {
   useEffect(() => {
     const load = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/bids/my");
+        const response = await axios.get(`${API_URL}/api/bids/my`);
         setBids(response.data);
       } catch (err) {
         console.error(err);

@@ -2,6 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import ClientNavbar from "../../components/ClientNavbar";
+import API_URL from "../../api";
 
 export default function ClientPostProject() {
   const [form, setForm] = useState({ title: "", description: "", minBudget: "", maxBudget: "", deadline: "", skills: "", category: "web" });
@@ -28,7 +29,7 @@ export default function ClientPostProject() {
       return;
     }
     try {
-      await axios.post("http://localhost:5000/api/projects", {
+      await axios.post(`${API_URL}/api/projects`, {
         title: form.title,
         description: form.description,
         budget: { min: Number(form.minBudget), max: Number(form.maxBudget) },

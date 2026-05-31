@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import ClientNavbar from "../../components/ClientNavbar";
+import API_URL from "../../api";
 
 export default function ClientMilestones() {
   const { projectId } = useParams();
@@ -13,7 +14,7 @@ export default function ClientMilestones() {
   useEffect(() => {
     const load = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/milestones/${projectId}`);
+        const response = await axios.get(`${API_URL}/api/milestones/${projectId}`);
         setMilestones(response.data);
       } catch (err) {
         console.error(err);
@@ -25,7 +26,7 @@ export default function ClientMilestones() {
   const handleCreate = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5000/api/milestones", {
+      await axios.post(`${API_URL}/api/milestones`, {
         projectId,
         ...form,
       });
@@ -40,7 +41,7 @@ export default function ClientMilestones() {
 
   const updateStatus = async (mileId, status) => {
     try {
-      await axios.put(`http://localhost:5000/api/milestones/${mileId}/status`, { status });
+      await axios.put(`${API_URL}/api/milestones/${mileId}/status`, { status });
       setMessage(`Milestone status updated to ${status}.`);
       setMilestones((prev) => prev.map((milestone) => (milestone._id === mileId ? { ...milestone, status } : milestone)));
     } catch (err) {

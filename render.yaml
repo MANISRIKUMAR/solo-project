@@ -2,19 +2,15 @@ services:
   - type: web
     name: freelance-bid-portal-server
     env: node
-    plan: starter
+    plan: free
     branch: main
-    buildCommand: cd server && npm install
-    startCommand: cd server && npm start
+    rootDir: server
+    buildCommand: npm install
+    startCommand: npm start
     envVars:
       - key: MONGODB_URI
-        value: "${MONGODB_URI}"
+        sync: false
       - key: JWT_SECRET
-        value: "${JWT_SECRET}"
-  - type: static_site
-    name: freelance-bid-portal-client
-    env: static
-    plan: starter
-    branch: main
-    buildCommand: cd client && npm install && npm run build
-    publishPath: client/dist
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
