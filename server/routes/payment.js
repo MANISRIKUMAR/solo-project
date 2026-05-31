@@ -7,10 +7,16 @@ const { verifyToken, isClient } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
+const rawKeyId = process.env.RAZORPAY_KEY_ID || "rzp_test_SvziKJI51wOz7b";
+const rawKeySecret = process.env.RAZORPAY_KEY_SECRET || "9JN7OhTkd5lRtznP4btavz6J";
+
+const keyId = typeof rawKeyId === "string" ? rawKeyId.trim().replace(/[\r\n\t]/g, "") : "rzp_test_SvziKJI51wOz7b";
+const keySecret = typeof rawKeySecret === "string" ? rawKeySecret.trim().replace(/[\r\n\t]/g, "") : "9JN7OhTkd5lRtznP4btavz6J";
+
 // Initialize Razorpay instance with environment variables
 const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID || "rzp_test_SvziKJI51wOz7b",
-  key_secret: process.env.RAZORPAY_KEY_SECRET || "9JN7OhTkd5lRtznP4btavz6J",
+  key_id: keyId,
+  key_secret: keySecret,
 });
 
 // Create Razorpay Order (24% Advance Payment)
@@ -51,7 +57,7 @@ router.post("/create-order", verifyToken, isClient, async (req, res) => {
       currency: order.currency,
       advanceAmount,
       bidId,
-      keyId: process.env.RAZORPAY_KEY_ID || "rzp_test_SvziKJI51wOz7b",
+      keyId: keyId,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -62,7 +68,8 @@ router.post("/create-order", verifyToken, isClient, async (req, res) => {
 router.post("/verify-payment", verifyToken, isClient, async (req, res) => {
   const { bidId, razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
   try {
-    const keySecret = process.env.RAZORPAY_KEY_SECRET || "9JN7OhTkd5lRtznP4btavz6J";
+    // Use sanitized keySecret
+    const currentKeySecret = keySecret;
 
     // Verify cryptographic signature
     const hmac = crypto.createHmac("sha256", keySecret);
