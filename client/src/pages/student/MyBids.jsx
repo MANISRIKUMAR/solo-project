@@ -36,6 +36,16 @@ export default function MyBids() {
                   <span className="rounded-full bg-slate-100 px-3 py-1 text-sm text-slate-700">{bid.status}</span>
                 </div>
                 <p className="mt-3 text-slate-600">{bid.proposal}</p>
+                {bid.project?.postedBy && (
+                  <div className="mt-4">
+                    <Link
+                      to={`/chat/${bid.project._id}/${bid.project.postedBy._id || bid.project.postedBy}`}
+                      className="inline-flex items-center gap-1.5 rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 transition duration-150"
+                    >
+                      💬 Chat with Client
+                    </Link>
+                  </div>
+                )}
               </div>
             ))}
             {!bids.length && <p className="text-slate-600">You have not placed any bids yet.</p>}

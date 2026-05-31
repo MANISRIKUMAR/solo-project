@@ -1,11 +1,15 @@
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import API_URL from "../api";
 
 export default function NotificationDropdown() {
   const [notifications, setNotifications] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const navigate = useNavigate();
+  const { user } = useAuth();
 
   const loadNotifications = async () => {
     try {
@@ -40,6 +44,29 @@ export default function NotificationDropdown() {
       setNotifications((prev) => prev.map((n) => n._id === id ? { ...n, read: true } : n));
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const handleNotificationClick = async (notification) => {
+    try {
+      // 1. Mark as read on backend and locally
+      await handleMarkRead(notification._id);
+
+      // 2. Redirect based on notification type and recipient role
+      if (notification.type === "chat_message") {
+        navigate(`/chat/${notification.project}/${notification.sender?._id || notification.sender}`);
+      } else if (notification.type === "bid_placed") {
+        navigate(`/client/projects/${notification.project}`);
+      } else if (notification.project) {
+        if (user?.role === "client") {
+          navigate(`/client/projects/${notification.project}`);
+        } else {
+          navigate(`/student/projects/${notification.project}`);
+        }
+      }
+      setIsOpen(false);
+    } catch (err) {
+      console.error("Could not handle notification redirect:", err);
     }
   };
 
@@ -105,7 +132,8 @@ export default function NotificationDropdown() {
               unreadNotifications.map((notification) => (
                 <div
                   key={notification._id}
-                  className="p-3 rounded-2xl border border-indigo-50 bg-indigo-50/20 transition duration-150 relative flex items-start justify-between gap-2 group"
+                  onClick={() => handleNotificationClick(notification)}
+                  className="p-3 rounded-2xl border border-indigo-50 bg-indigo-50/20 hover:bg-indigo-100/40 transition duration-150 relative flex items-start justify-between gap-2 group cursor-pointer"
                 >
                   <div className="flex-1">
                     <p className="text-xs text-slate-800 leading-relaxed font-medium">
@@ -119,7 +147,10 @@ export default function NotificationDropdown() {
                     </span>
                   </div>
                   <button
-                    onClick={() => handleMarkRead(notification._id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleMarkRead(notification._id);
+                    }}
                     title="Mark as read & dismiss"
                     className="rounded-full p-1 text-slate-400 hover:bg-indigo-600 hover:text-white transition duration-150 self-start"
                   >

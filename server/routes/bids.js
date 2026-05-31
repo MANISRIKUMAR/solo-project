@@ -47,7 +47,7 @@ router.post("/", verifyToken, isStudent, async (req, res) => {
 
 router.get("/my", verifyToken, isStudent, async (req, res) => {
   try {
-    const bids = await Bid.find({ bidder: req.user._id }).populate("project", "title status budget").sort({ submittedAt: -1 });
+    const bids = await Bid.find({ bidder: req.user._id }).populate("project", "title status budget postedBy").sort({ submittedAt: -1 });
     res.json(bids);
   } catch (error) {
     res.status(500).json({ message: error.message });

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 import StudentNavbar from "../../components/StudentNavbar";
 import { useAuth } from "../../context/AuthContext";
 import API_URL from "../../api";
@@ -62,6 +63,14 @@ export default function StudentDashboard() {
                     <p className="text-lg font-semibold text-slate-900">{bid.project?.title || "Project"}</p>
                     <p className="text-sm text-slate-600">Amount: ${bid.amount} • Status: {bid.status}</p>
                   </div>
+                  {bid.project?.postedBy && (
+                    <Link
+                      to={`/chat/${bid.project._id}/${bid.project.postedBy._id || bid.project.postedBy}`}
+                      className="inline-flex items-center gap-1.5 rounded-xl bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-500 transition duration-150"
+                    >
+                      💬 Chat
+                    </Link>
+                  )}
                 </div>
               </div>
             ))}
