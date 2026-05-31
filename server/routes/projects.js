@@ -78,7 +78,7 @@ router.delete("/:id", verifyToken, isClient, async (req, res) => {
     if (hasBids) {
       return res.status(400).json({ message: "Cannot delete project after bids are received" });
     }
-    await project.remove();
+    await project.deleteOne();
     res.json({ message: "Project deleted" });
   } catch (error) {
     res.status(500).json({ message: error.message });

@@ -8,8 +8,8 @@ export default function ProjectDetail() {
   const { id } = useParams();
   const [project, setProject] = useState(null);
   const [myBid, setMyBid] = useState(null);
-  const [form, setForm] = useState({ amount: "", deliveryDays: "", proposal: "" });
   const [message, setMessage] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   const load = async () => {
     try {
@@ -34,6 +34,7 @@ export default function ProjectDetail() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (submitting) return;
     const amount = Number(form.amount);
     const deliveryDays = Number(form.deliveryDays);
     if (amount <= 0) {
@@ -44,6 +45,7 @@ export default function ProjectDetail() {
       setMessage("Delivery days must be between 1 and 365.");
       return;
     }
+    setSubmitting(true);
     try {
       if (myBid) {
         await axios.put(`${API_URL}/api/bids/${myBid._id}`, form);
@@ -58,6 +60,8 @@ export default function ProjectDetail() {
       load();
     } catch (err) {
       setMessage(err.response?.data?.message || "Could not submit bid.");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -106,8 +110,10 @@ export default function ProjectDetail() {
                       <textarea value={form.proposal} onChange={(e) => setForm({ ...form, proposal: e.target.value })} className="mt-1 w-full rounded border border-slate-300 px-3 py-2" rows="5" required />
                     </label>
                     <div className="flex flex-wrap gap-2">
-                      <button type="submit" className="rounded bg-slate-900 px-4 py-2 text-white hover:bg-slate-700">{myBid ? "Update Bid" : "Submit Bid"}</button>
-                      {myBid && <button type="button" onClick={handleWithdraw} className="rounded bg-rose-600 px-4 py-2 text-white hover:bg-rose-500">Withdraw Bid</button>}
+                      <button type="submit" disabled={submitting} className="rounded bg-slate-900 px-4 py-2 text-white hover:bg-slate-700 disabled:bg-slate-400">
+                        {submitting ? "Submitting..." : (myBid ? "Update Bid" : "Submit Bid")}
+                      </button>
+                      {myBid && <button type="button" onClick={handleWithdraw} disabled={submitting} className="rounded bg-rose-600 px-4 py-2 text-white hover:bg-rose-500 disabled:bg-slate-400">Withdraw Bid</button>}
                     </div>
                   </form>
                 </div>

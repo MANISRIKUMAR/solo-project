@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
+import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ClientDashboard from "./pages/client/ClientDashboard";
@@ -68,7 +69,7 @@ function App() {
         path="/student/profile"
         element={<ProtectedRoute role="student" redirectTo="/client/dashboard"><StudentProfile /></ProtectedRoute>}
       />
-      <Route path="/" element={<Navigate to="/login" replace />} />
+      <Route path="/" element={<Home />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

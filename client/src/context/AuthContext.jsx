@@ -4,18 +4,16 @@ import axios from "axios";
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
-
-  useEffect(() => {
-    const stored = localStorage.getItem("freelanceToken");
+  const [token, setToken] = useState(() => localStorage.getItem("freelanceToken"));
+  const [user, setUser] = useState(() => {
     const profile = localStorage.getItem("freelanceUser");
-    if (stored && profile) {
-      setToken(stored);
-      setUser(JSON.parse(profile));
-      axios.defaults.headers.common["Authorization"] = `Bearer ${stored}`;
-    }
-  }, []);
+    return profile ? JSON.parse(profile) : null;
+  });
+
+  // Set default authorization header synchronously if token is already present
+  if (token) {
+    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+  }
 
   const login = (data) => {
     localStorage.setItem("freelanceToken", data.token);

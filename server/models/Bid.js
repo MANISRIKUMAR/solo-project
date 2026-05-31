@@ -14,4 +14,6 @@ const bidSchema = new mongoose.Schema({
   submittedAt: { type: Date, default: Date.now },
 }, { timestamps: true });
 
+bidSchema.index({ project: 1, bidder: 1 }, { unique: true });
+
 module.exports = mongoose.model("Bid", bidSchema);
