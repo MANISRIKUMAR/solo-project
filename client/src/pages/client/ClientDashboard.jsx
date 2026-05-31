@@ -65,7 +65,17 @@ export default function ClientDashboard() {
                     <h3 className="text-lg font-semibold text-slate-900">{project.title}</h3>
                     <p className="text-sm text-slate-600">Status: {project.status}</p>
                   </div>
-                  <button onClick={() => navigate(`/client/projects/${project._id}`)} className="rounded bg-slate-900 px-4 py-2 text-white hover:bg-slate-700">View</button>
+                  <div className="flex items-center gap-2">
+                    {project.status === "in-progress" && project.selectedBid?.bidder && (
+                      <button
+                        onClick={() => navigate(`/chat/${project._id}/${project.selectedBid.bidder._id || project.selectedBid.bidder}`)}
+                        className="rounded bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-500 text-sm font-semibold transition"
+                      >
+                        💬 Chat
+                      </button>
+                    )}
+                    <button onClick={() => navigate(`/client/projects/${project._id}`)} className="rounded bg-slate-900 px-4 py-2 text-white hover:bg-slate-700">View</button>
+                  </div>
                 </div>
               </div>
             ))}

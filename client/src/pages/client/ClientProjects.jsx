@@ -46,6 +46,14 @@ export default function ClientProjects() {
                     <p className="mt-1 text-sm text-slate-600">Status: {project.status} • Bids: {project.totalBids}</p>
                   </div>
                   <div className="flex gap-2">
+                    {project.status === "in-progress" && project.selectedBid?.bidder && (
+                      <Link
+                        to={`/chat/${project._id}/${project.selectedBid.bidder._id || project.selectedBid.bidder}`}
+                        className="rounded bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-500 text-sm font-semibold transition"
+                      >
+                        💬 Chat
+                      </Link>
+                    )}
                     {project.totalBids === 0 && project.status === "open" && (
                       <button onClick={() => handleDelete(project._id)} className="rounded bg-rose-600 px-4 py-2 text-white hover:bg-rose-500">Delete</button>
                     )}

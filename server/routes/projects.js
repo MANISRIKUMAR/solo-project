@@ -41,7 +41,12 @@ router.post("/", verifyToken, isClient, async (req, res) => {
 
 router.get("/my", verifyToken, isClient, async (req, res) => {
   try {
-    const projects = await Project.find({ postedBy: req.user._id }).sort({ createdAt: -1 });
+    const projects = await Project.find({ postedBy: req.user._id })
+      .populate({
+        path: "selectedBid",
+        populate: { path: "bidder", select: "name profilePhoto" }
+      })
+      .sort({ createdAt: -1 });
     res.json(projects);
   } catch (error) {
     res.status(500).json({ message: error.message });

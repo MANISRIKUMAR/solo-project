@@ -80,6 +80,10 @@ function App() {
         element={<ProtectedRoute role="student" redirectTo="/client/dashboard"><StudentProfile /></ProtectedRoute>}
       />
       <Route
+        path="/client/profile"
+        element={<ProtectedRoute role="client" redirectTo="/student/dashboard"><StudentProfile /></ProtectedRoute>}
+      />
+      <Route
         path="/chat/:projectId/:partnerId"
         element={<ProtectedRoute><Chat /></ProtectedRoute>}
       />
