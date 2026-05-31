@@ -26,14 +26,74 @@ export default function ClientProjectDetail() {
     load();
   }, [id]);
 
-  const handleAction = async (bidId, action) => {
+  const handleAcceptBid = async (bidId) => {
     try {
-      const response = await axios.put(`${API_URL}/api/bids/${bidId}/${action}`);
+      // 1. Create Razorpay Order on the backend (24% advance fee)
+      const response = await axios.post(`${API_URL}/api/payments/create-order`, { bidId });
+      const { orderId, amount, currency, advanceAmount, keyId } = response.data;
+
+      // 2. Open Razorpay Checkout Modal
+      const options = {
+        key: keyId,
+        amount: amount,
+        currency: currency,
+        name: "Freelance Bid Portal",
+        description: `24% Advance Payment for accepted bid (₹${advanceAmount})`,
+        order_id: orderId,
+        handler: async function (response) {
+          try {
+            // 3. Verify signature and accept bid on the backend
+            await axios.post(`${API_URL}/api/payments/verify-payment`, {
+              bidId,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+            });
+
+            setMessage("Payment verified and bid accepted successfully!");
+            
+            // 4. Update local state
+            setProject((prev) => ({ ...prev, status: "in-progress", selectedBid: bidId }));
+            setBids((prev) =>
+              prev.map((bid) =>
+                bid._id === bidId
+                  ? { ...bid, status: "accepted" }
+                  : bid.status === "pending"
+                  ? { ...bid, status: "rejected" }
+                  : bid
+              )
+            );
+          } catch (verifyErr) {
+            console.error(verifyErr);
+            setMessage(verifyErr.response?.data?.message || "Payment verification failed.");
+          }
+        },
+        prefill: {
+          name: project?.postedBy?.name || "",
+          email: project?.postedBy?.email || "",
+        },
+        theme: {
+          color: "#4f46e5", // Indigo theme color
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch (err) {
+      console.error(err);
+      setMessage(err.response?.data?.message || "Failed to initiate payment.");
+    }
+  };
+
+  const handleAction = async (bidId, action) => {
+    if (action === "accept") {
+      await handleAcceptBid(bidId);
+      return;
+    }
+    try {
+      await axios.put(`${API_URL}/api/bids/${bidId}/${action}`);
       setMessage(`Bid ${action}ed successfully.`);
-      if (action === "accept") {
-        setProject((prev) => ({ ...prev, status: "in-progress", selectedBid: response.data.bid._id }));
-      }
-      setBids((prev) => prev.map((bid) => bid._id === bidId ? { ...bid, status: action === "accept" ? "accepted" : "rejected" } : bid));
+      setBids((prev) => prev.map((bid) => bid._id === bidId ? { ...bid, status: "rejected" } : bid));
     } catch (err) {
       setMessage(err.response?.data?.message || "Action failed.");
     }
