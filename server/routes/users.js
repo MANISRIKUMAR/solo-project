@@ -53,9 +53,9 @@ if (process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && proce
 
 const upload = multer({ storage });
 
-router.get("/:id/profile", async (req, res) => {
+router.get("/me/profile", verifyToken, async (req, res) => {
   try {
-    const user = await User.findById(req.params.id).select("-password");
+    const user = await User.findById(req.user._id).select("-password");
     if (!user) return res.status(404).json({ message: "User not found" });
     res.json(user);
   } catch (error) {
@@ -63,9 +63,9 @@ router.get("/:id/profile", async (req, res) => {
   }
 });
 
-router.get("/me/profile", verifyToken, async (req, res) => {
+router.get("/:id/profile", async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).select("-password");
+    const user = await User.findById(req.params.id).select("-password");
     if (!user) return res.status(404).json({ message: "User not found" });
     res.json(user);
   } catch (error) {
