@@ -73,7 +73,18 @@ router.get("/:id/profile", async (req, res) => {
   }
 });
 
-router.put("/profile", verifyToken, upload.single("profilePhoto"), async (req, res) => {
+router.put("/profile", verifyToken, (req, res, next) => {
+  upload.single("profilePhoto")(req, res, (err) => {
+    if (err) {
+      console.error("Multer upload error:", err);
+      return res.status(400).json({
+        message: "Profile photo upload failed. Please verify your Cloudinary configuration.",
+        error: err.message
+      });
+    }
+    next();
+  });
+}, async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
     if (!user) return res.status(404).json({ message: "User not found" });
