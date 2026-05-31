@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import StudentNavbar from "../../components/StudentNavbar";
 import API_URL from "../../api";
 
@@ -133,6 +133,16 @@ export default function ProjectDetail() {
                   <p className="mt-4 text-slate-600">Skills needed: {project.skills.join(", ")}</p>
                   <p className="mt-2 text-slate-600">Total bids: {project.totalBids}</p>
                   <p className="mt-2 text-slate-600">Project posted by: {project.postedBy?.name || "Client"}</p>
+                  {project.postedBy && (
+                    <div className="mt-6">
+                      <Link
+                        to={`/chat/${project._id}/${project.postedBy._id || project.postedBy}`}
+                        className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white shadow-md shadow-indigo-600/10 hover:bg-indigo-500 hover:shadow-indigo-500/20 transition duration-150"
+                      >
+                        💬 Discuss Project
+                      </Link>
+                    </div>
+                  )}
                 </div>
               </div>
             </>

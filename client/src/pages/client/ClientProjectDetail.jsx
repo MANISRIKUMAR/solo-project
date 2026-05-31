@@ -141,6 +141,12 @@ export default function ClientProjectDetail() {
                               <button onClick={() => handleAction(bid._id, "reject")} className="rounded bg-rose-600 px-4 py-2 text-white hover:bg-rose-500">Reject</button>
                             </>
                           )}
+                          <Link
+                            to={`/chat/${project._id}/${bid.bidder._id || bid.bidder}`}
+                            className="inline-flex items-center gap-1.5 rounded bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 transition duration-150"
+                          >
+                            💬 Chat
+                          </Link>
                           <span className="rounded-full bg-slate-100 px-3 py-1 text-sm text-slate-700">Portfolio preview unavailable</span>
                         </div>
                       </div>

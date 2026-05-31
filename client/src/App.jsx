@@ -14,6 +14,7 @@ import Browse from "./pages/student/Browse";
 import ProjectDetail from "./pages/student/ProjectDetail";
 import MyBids from "./pages/student/MyBids";
 import StudentProfile from "./pages/student/StudentProfile";
+import Chat from "./pages/Chat";
 import NotFound from "./pages/NotFound";
 
 function ProtectedRoute({ children, role, redirectTo }) {
@@ -77,6 +78,10 @@ function App() {
       <Route
         path="/student/profile"
         element={<ProtectedRoute role="student" redirectTo="/client/dashboard"><StudentProfile /></ProtectedRoute>}
+      />
+      <Route
+        path="/chat/:projectId/:partnerId"
+        element={<ProtectedRoute><Chat /></ProtectedRoute>}
       />
       <Route path="/" element={<Home />} />
       <Route path="*" element={<NotFound />} />

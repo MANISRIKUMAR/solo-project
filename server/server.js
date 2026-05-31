@@ -9,6 +9,7 @@ const milestoneRoutes = require("./routes/milestones");
 const userRoutes = require("./routes/users");
 const paymentRoutes = require("./routes/payment");
 const notificationRoutes = require("./routes/notifications");
+const messageRoutes = require("./routes/messages");
 
 dotenv.config();
 connectDB();
@@ -287,6 +288,7 @@ app.use("/api/milestones", milestoneRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/messages", messageRoutes);
 
 app.get("/", (req, res) => {
   res.json({
