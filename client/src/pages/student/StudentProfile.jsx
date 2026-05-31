@@ -74,11 +74,7 @@ export default function StudentProfile() {
     }
 
     try {
-      const res = await axios.put(`${API_URL}/api/users/profile`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const res = await axios.put(`${API_URL}/api/users/profile`, formData);
 
       // Synchronize changes to local storage so the navbar avatar updates instantly
       const stored = localStorage.getItem("freelanceUser");
