@@ -1,4 +1,5 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 import { useAuth } from "./context/AuthContext";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -25,6 +26,14 @@ function ProtectedRoute({ children, role, redirectTo }) {
 }
 
 function App() {
+  const location = useLocation();
+
+  useEffect(() => {
+    // Reset any stuck overflow-hidden style from Razorpay or other modal frameworks
+    document.body.style.overflow = "unset";
+    document.documentElement.style.overflow = "unset";
+  }, [location.pathname]);
+
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
