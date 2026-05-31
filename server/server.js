@@ -11,9 +11,14 @@ const userRoutes = require("./routes/users");
 dotenv.config();
 connectDB();
 
+const rawFrontendUrl = process.env.FRONTEND_URL || "*";
+const frontendUrl = typeof rawFrontendUrl === "string" 
+  ? rawFrontendUrl.trim().replace(/[\r\n\t]/g, "") 
+  : "*";
+
 const app = express();
 app.use(cors({
-  origin: process.env.FRONTEND_URL || "*",
+  origin: frontendUrl,
   credentials: true,
 }));
 app.use(express.json());
